@@ -91,7 +91,10 @@ void * mavalloc_alloc( size_t size )
   }
   else if ( allocation_algorithm == NEXT_FIT )
   {
-    node = previous_node;
+      if (previous_node == NULL)
+        previous_node = alloc_list;
+
+      node = previous_node;
   }
   else
   {
@@ -133,6 +136,42 @@ void * mavalloc_alloc( size_t size )
   }
 
   // Implement Next Fit
+  if (allocation_algorithm == NEXT_FIT)
+  {
+      while (node)
+      {
+          if( node -> size >= aligned_size  && node -> type == FREE )
+          {
+            int leftover_size = 0;
+
+            node -> type  = USED;
+            leftover_size = node -> size - aligned_size;
+            node -> size =  aligned_size;
+
+            if( leftover_size > 0 )
+            {
+              struct Node * previous_next = node -> next;
+              struct Node * leftover_node = ( struct Node * ) malloc ( sizeof( struct Node ));
+
+              leftover_node -> arena = node -> arena + size;
+              leftover_node -> type  = FREE;
+              leftover_node -> size  = leftover_size;
+              leftover_node -> next  = previous_next;
+
+              node -> next = leftover_node;
+            }
+            previous_node = node;
+            return ( void * ) node -> arena;
+          }
+
+          node = node->next;
+
+          if (node == previous_node) break;
+          if (node == NULL)
+            node = alloc_list;
+      }
+  }
+
   // Implement Worst Fit
   // Implement Best Fit
 
