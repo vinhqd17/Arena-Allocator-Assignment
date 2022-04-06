@@ -32,6 +32,14 @@ enum TYPE
     USED
 };
 
+enum ALGORITHM
+{
+    FIRST_FIT;
+    NEXT_FIT;
+    BEST_FIT;
+    WORST_FIT;
+}
+
 struct Node {
   size_t size;
   enum TYPE type;
@@ -44,7 +52,7 @@ struct Node *alloc_list;
 
 void * arena;
 
-enum ALGORITHM allocation_algorithm = FIRST_FIT;
+enum ALGORITHM allocation_algorithm;
 
 int mavalloc_init( size_t size, enum ALGORITHM algorithm )
 {
@@ -127,7 +135,36 @@ void * mavalloc_alloc( size_t size )
 
   // Implement Next Fit
   // Implement Worst Fit
+  struct Node *winner = NULL;
+  int winning_size = INT_MAX;
+  int losing_size = INT_MIN;
+  if(allocation_algorithm == WORST_FIT)
+  {
+    while(node)
+    {
+      if(node -> free && (node -> size - size) > losing_size)
+      {
+        winner = node;
+        losing_size = node -> size - size;
+      }
+      node = node -> next;
+    }
+    return winner;
+  }
   // Implement Best Fit
+  if(allocation_algorithm == BEST_FIT)
+  {
+    while(node)
+    {
+      if(node -> free && (node -> size - size) < winning_size)
+      {
+        winner = node;
+        winning_size = node -> size - size;
+      }
+      node = node -> next;
+    }
+    return winner;
+  }
 
   return NULL;
 }
