@@ -172,8 +172,38 @@ void * mavalloc_alloc( size_t size )
       }
   }
 
-  // Implement Worst Fit
+  struct Node *winner = NULL;
+  int winning_size = INT_MAX;
+  int losing_size = INT_MIN;
+
+  if(allocation_algorithm == WORST_FIT)
+  {
+    while(node)
+    {
+      if(node -> free && (node -> size - size) > losing_size)
+      {
+        winner = node;
+        losing_size = node -> size - size;
+      }
+      node = node -> next;
+    }
+    return winner;
+  }
+
   // Implement Best Fit
+  if(allocation_algorithm == BEST_FIT)
+  {
+    while(node)
+    {
+      if(node -> free && (node -> size - size) < winning_size)
+      {
+        winner = node;
+        winning_size = node -> size - size;
+      }
+      node = node -> next;
+    }
+    return winner;
+  }
 
   return NULL;
 }
