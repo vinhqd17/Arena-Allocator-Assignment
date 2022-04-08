@@ -71,7 +71,7 @@ void mavalloc_destroy( )
 {
   free( arena );
 
-  struct * Node temp;
+  struct Node * temp;
 
   while (alloc_list)
   {
@@ -182,7 +182,7 @@ void * mavalloc_alloc( size_t size )
   {
     while(node)
     {
-      if(node -> free && (node -> size - size) > losing_size)
+      if(node -> type == FREE && (node -> size - size) > losing_size)
       {
         winner = node;
         losing_size = node -> size - size;
@@ -197,7 +197,7 @@ void * mavalloc_alloc( size_t size )
   {
     while(node)
     {
-      if(node -> free && (node -> size - size) < winning_size)
+      if(node -> type == FREE && (node -> size - size) < winning_size)
       {
         winner = node;
         winning_size = node -> size - size;
